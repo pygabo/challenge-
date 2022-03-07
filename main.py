@@ -35,21 +35,16 @@ async def generate_token(form_data: _security.OAuth2PasswordRequestForm = _fasta
     return await _services.create_token(user=user)
 
 
-@app.get("/api/users/me", response_model=_schemas.User)
-async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
-    return user
-
-
-@app.post("/api/user-posts", response_model=_schemas.Post)
-async def create_post(
-        post: _schemas.PostCreate,
+@app.post("/api/create-order", response_model=_schemas.Orders)
+async def create_order(
+        order: _schemas.OrderCreate,
         user: _schemas.User = _fastapi.Depends(_services.get_current_user),
         db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    return await _services.create_post(user=user, db=db, post=post)
+    return await _services.create_order(user=user, db=db, order=order)
 
 
-@app.get("/api/my-posts", response_model=List[_schemas.Post])
-async def get_user_posts(user: _schemas.User = _fastapi.Depends(_services.get_current_user),
-                         db: _orm.Session = _fastapi.Depends(_services.get_db)):
-    return await _services.get_user_posts(user=user, db=db)
+@app.get("/api/my-orders", response_model=List[_schemas.Orders])
+async def get_user_orders(user: _schemas.User = _fastapi.Depends(_services.get_current_user),
+                          db: _orm.Session = _fastapi.Depends(_services.get_db)):
+    return await _services.get_user_orders(user=user, db=db)

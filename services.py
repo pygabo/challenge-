@@ -1,5 +1,4 @@
 import os as _os
-
 import dotenv as _dotenv
 import jwt as _jwt
 import sqlalchemy.orm as _orm
@@ -7,7 +6,6 @@ import passlib.hash as _hash
 import email_validator as _email_check
 import fastapi as _fastapi
 import fastapi.security as _security
-
 import database as _database
 import schemas as _schemas
 import models as _models
@@ -41,9 +39,9 @@ async def create_user(user: _schemas.UserCreate, db: _orm.Session):
 
         email = valid.email
     except _email_check.EmailNotValidError:
-        raise _fastapi.HTTPException(status_code=404, detail="Please enter a valid email")
+        raise _fastapi.HTTPException(status_code=404, detail="Enter a valid email")
 
-    user_obj = _models.User(email=email, hashed_password=_hash.bcrypt.hash(user.password))
+    user_obj = _models.User(email=email, password=_hash.bcrypt.hash(user.password))
 
     db.add(user_obj)
     db.commit()
@@ -81,20 +79,20 @@ async def get_current_user(db: _orm.Session = _fastapi.Depends(get_db), token: s
 
     except:
         raise _fastapi.HTTPException(
-            status_code=401, detail="Invalid Email or Password"
+            status_code=401, detail="Invalid Password"
         )
     return _schemas.User.from_orm(user)
 
 
-async def create_post(user: _schemas.User, db: _orm.Session, post: _schemas.PostCreate):
-    post = _models.Post(**post.dict(), owner_id=user.id)
-    db.add(post)
+async def create_order(user: _schemas.User, db: _orm.Session, order: _schemas.OrderCreate):
+    order = _models.Orders(**order.dict(), customer_id=user.id)
+    db.add(order)
     db.commit()
-    db.refresh(post)
-    return _schemas.Post.from_orm(post)
+    db.refresh(order)
+    return _schemas.Orders.from_orm(order)
 
 
-async def get_user_posts(user: _schemas.User, db: _orm.Session):
-    posts = db.query(_models.Post).filter_by(owner_id=user.id)
+async def get_user_orders(user: _schemas.User, db: _orm.Session):
+    orders = db.query(_models.Orders).filter_by(customer_id=user.id)
 
-    return list(map(_schemas.Post.from_orm, posts))
+    return list(map(_schemas.Orders.from_orm, orders))

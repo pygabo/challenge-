@@ -22,18 +22,21 @@ class User(_UserBase):
         orm_mode = True
 
 
-class _PostBase(_pydantic.BaseModel):
-    post_text: str
+class _OrdersBase(_pydantic.BaseModel):
+    price: int
+    order_date: _dt.datetime
 
 
-class PostCreate(_PostBase):
+class OrderCreate(_OrdersBase):
     pass
 
 
-class Post(_PostBase):
+class Orders(_OrdersBase):
     id: int
-    owner_id: int
-    date_created: _dt.datetime
+    customer_id: int
+    order_date: _dt.datetime
+    price: int
+    status: bool
 
     class Config:
         orm_mode = True
