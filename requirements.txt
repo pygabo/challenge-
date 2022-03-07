@@ -1,0 +1,5 @@
+fastapi[all]==0.75.0
+pyjwt==2.3.0
+SQLALchemy==1.4.32
+passlib==1.7.4
+email-validator==1.1.3
