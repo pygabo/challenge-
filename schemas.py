@@ -24,7 +24,6 @@ class User(_UserBase):
 
 class _OrdersBase(_pydantic.BaseModel):
     price: int
-    order_date: _dt.datetime
 
 
 class OrderCreate(_OrdersBase):

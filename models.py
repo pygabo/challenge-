@@ -19,25 +19,28 @@ class User(_database.Base):
         return _hash.bcrypt.verify(password, self.password)
 
 
-class Orders(_database.Base):
-    __tablename__ = "orders"
-    id = _sql.Column(_sql.Integer, primary_key=True, index=True)
-    price = _sql.Column(_sql.String, index=True)
-    order_date = _sql.Column(_sql.DateTime, default=_dt.datetime.utcnow)
-    customer_id = _sql.Column(_sql.Integer, _sql.ForeignKey("users.id"))
-    customer = _orm.relationship("User", back_populates="orders")
-
-
-class OrderDetails(_database.Base):
-    __tablename__ = "order_details"
-    id = _sql.Column(_sql.Integer, primary_key=True, index=True)
-
-
 class Product(_database.Base):
-    __tablename__ = "product"
+    __tablename__ = "products"
 
     id = _sql.Column(_sql.Integer, primary_key=True, index=True)
     name = _sql.Column(_sql.String(200))
     brand = _sql.Column(_sql.String(200))
     price = _sql.Column(_sql.Integer)
     inventory = _sql.Column(_sql.Integer)
+
+
+class Orders(_database.Base):
+    __tablename__ = "orders"
+    id = _sql.Column(_sql.Integer, primary_key=True, index=True)
+    price = _sql.Column(_sql.String, index=True)
+    status = _sql.Column(_sql.Boolean, unique=False, default=True)
+    order_date = _sql.Column(_sql.DateTime, default=_dt.datetime.utcnow)
+    customer_id = _sql.Column(_sql.Integer, _sql.ForeignKey("users.id"))
+    customer = _orm.relationship("User", back_populates="orders")
+    product_id = _sql.Column(_sql.Integer, _sql.ForeignKey('products.id'))
+    product = _orm.relationship(Product, backref=_orm.backref("orders", cascade="all, delete-orphan"))
+
+
+class OrderDetails(_database.Base):
+    __tablename__ = "order_details"
+    id = _sql.Column(_sql.Integer, primary_key=True, index=True)
